@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2022-10-09T10:43:15+00:00</updated><id>/feed.xml</id><title type="html">Redstonerayys Projects</title><subtitle>Project site with documentation(maybe) and infos.</subtitle><entry><title type="html">Generate Polynomials using Python</title><link href="/python,/math/2022/10/09/polynomals-in-python.html" rel="alternate" type="text/html" title="Generate Polynomials using Python" /><published>2022-10-09T10:00:00+00:00</published><updated>2022-10-09T10:00:00+00:00</updated><id>/python,/math/2022/10/09/polynomals-in-python</id><content type="html" xml:base="/python,/math/2022/10/09/polynomals-in-python.html"><![CDATA[<p>A short program to generate simple Polynomials in Python.
+It can be configured to use a certain range of numbers and can also output
+to LATEX in a simple file.
+It can be run with <code class="language-plaintext highlighter-rouge">python [filename] [filenumber] [amount] [min of a] [max of a]</code>.
+<br />
+A good starting example is <code class="language-plaintext highlighter-rouge">python [filename] 1 100 -3 3</code>
+<br />
+<br />
+The program utilizes the modules <code class="language-plaintext highlighter-rouge">time</code> and <code class="language-plaintext highlighter-rouge">random</code> to generate random exponential functions
+and then merges them into a Polynomial of a certain degree.</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span> <span class="k">as</span> <span class="n">D</span>
+
+<span class="c1"># set pseudorandom generator with current time
+</span><span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="p">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">random</span><span class="p">.</span><span class="n">seed</span><span class="p">(</span><span class="n">now</span><span class="p">)</span>
+
+<span class="c1"># random number between min, max with an additional floating point digit
+# rounded to 1/10
+</span><span class="k">def</span> <span class="nf">gen_number</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span><span class="p">):</span>
+    <span class="c1"># use decimal module to prevent floating point errors
+</span>    <span class="c1"># so 0.1 is not displayed as 0.0.99999999999998
+</span>    <span class="k">return</span> <span class="n">random</span><span class="p">.</span><span class="n">randrange</span><span class="p">(</span><span class="nb">min</span><span class="p">,</span> <span class="nb">max</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nb">round</span><span class="p">(</span><span class="n">D</span><span class="p">(</span><span class="n">random</span><span class="p">.</span><span class="n">random</span><span class="p">()),</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># generate exponential factor and exponential
+</span><span class="k">def</span> <span class="nf">gen_exponential</span><span class="p">(</span><span class="n">exp</span><span class="p">,</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">):</span>
+    <span class="n">factor</span> <span class="o">=</span> <span class="n">gen_number</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+    <span class="n">exponential</span> <span class="o">=</span> <span class="n">exp</span> <span class="k">if</span> <span class="n">exp</span> <span class="ow">or</span> <span class="n">exp</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">factor</span><span class="p">,</span> <span class="n">exponential</span>
+
+<span class="s">"""
+f(x) = a(n)x^k + a(n-1)x^k-1 ... a(1)x + a(0)  
+degrees - degrees of polynomal function
+only rational numbers, rounded to first after floating point
+exponent is natural number
+fractions included
+min,max are +/- 1 because of number generation
+"""</span>
+<span class="k">def</span> <span class="nf">gen_function</span><span class="p">(</span><span class="n">degree</span><span class="p">,</span> <span class="n">amin</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span> <span class="n">amax</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">degree</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">False</span>
+    <span class="c1"># generate which parts should be generated
+</span>    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">parts</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># generate an exponential function for each part
+</span>    <span class="n">exponentfunctions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="n">index</span><span class="p">]:</span>
+            <span class="n">exponentfunctions</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">gen_exponential</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">amin</span><span class="p">,</span> <span class="n">amax</span><span class="p">))</span>
+
+    <span class="c1"># exponentfunctions = exponentfunctions[::-1] # reverse, because polynom is reverse
+</span>
+    <span class="c1"># generate an output string
+</span>    <span class="n">funcstring</span> <span class="o">=</span> <span class="s">""</span>
+    <span class="c1"># add the first element without x, because it is a(0)
+</span>    <span class="k">if</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="c1"># add and delete from array
+</span>        <span class="n">funcstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">exponentfunctions</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s">"</span>
+        <span class="k">del</span> <span class="n">exponentfunctions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># in reverse order add the functions so the smaller ones are added first
+</span>    <span class="k">for</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">exponentfunctions</span><span class="p">[::</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">funcstring</span><span class="p">:</span>
+            <span class="n">funcstring</span> <span class="o">=</span> <span class="s">" + "</span> <span class="o">+</span> <span class="n">funcstring</span>
+        <span class="n">funcstring</span> <span class="o">=</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">func</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s">x^</span><span class="si">{</span><span class="n">func</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s">"</span> <span class="o">+</span> <span class="n">funcstring</span>
+
+    <span class="k">return</span> <span class="n">funcstring</span>
+
+
+<span class="k">def</span> <span class="nf">add_latex_formatting</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s">"</span><span class="si">{</span><span class="n">num</span><span class="si">}</span><span class="s">) f(x) = $</span><span class="si">{</span><span class="n">func</span><span class="si">}</span><span class="s">$"</span>
+
+<span class="c1"># argv for filename, function count and min,max degree
+# e. g. python [this file] 1 100 -3 3
+</span><span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">"__main__"</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s">"functions</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="si">}</span><span class="s">.txt"</span><span class="p">,</span> <span class="s">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+        <span class="n">funcs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">])):</span>
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span> <span class="c1"># prevent empty functions
+</span>                <span class="n">func</span> <span class="o">=</span> <span class="n">gen_function</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="p">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">4</span><span class="p">]))</span>
+                <span class="k">if</span> <span class="n">func</span> <span class="o">!=</span> <span class="s">""</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">func</span> <span class="ow">in</span> <span class="n">funcs</span><span class="p">):</span> <span class="c1"># prevent empty and double
+</span>                    <span class="k">break</span>
+            <span class="n">funcs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">func</span><span class="p">)</span> <span class="c1"># prevent doubles
+</span>            <span class="n">func</span> <span class="o">=</span> <span class="n">add_latex_formatting</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="nb">file</span><span class="p">.</span><span class="n">write</span><span class="p">(</span><span class="n">func</span> <span class="o">+</span> <span class="s">"</span><span class="se">\n\n</span><span class="s">"</span><span class="p">)</span> <span class="c1"># double newline for LATEX</span></code></pre></figure>]]></content><author><name></name></author><category term="python," /><category term="math" /><summary type="html"><![CDATA[A short program to generate simple Polynomials in Python. It can be configured to use a certain range of numbers and can also output to LATEX in a simple file. It can be run with python [filename] [filenumber] [amount] [min of a] [max of a]. A good starting example is python [filename] 1 100 -3 3 The program utilizes the modules time and random to generate random exponential functions and then merges them into a Polynomial of a certain degree.]]></summary></entry><entry><title type="html">C++ Hello World</title><link href="/c++/2022/09/13/c++-hello-world.html" rel="alternate" type="text/html" title="C++ Hello World" /><published>2022-09-13T08:48:41+00:00</published><updated>2022-09-13T08:48:41+00:00</updated><id>/c++/2022/09/13/c++-hello-world</id><content type="html" xml:base="/c++/2022/09/13/c++-hello-world.html"><![CDATA[<p>The Default Hello World Program written in C++. It can be easily compiled
+using g++, clang++ or other compilers.
+<br />
+Using <code class="language-plaintext highlighter-rouge">g++ helloworld.cpp -o helloworld</code> you can compile it and run it with
+<code class="language-plaintext highlighter-rouge">./helloworld</code> on most unix systems.
+<br />
+On Windows you can use Visual Studio or MingW to build the file and then
+run it either through cmd or Powershell.</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(){</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">"Hello World!"</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>]]></content><author><name></name></author><category term="c++" /><summary type="html"><![CDATA[The Default Hello World Program written in C++. It can be easily compiled using g++, clang++ or other compilers. Using g++ helloworld.cpp -o helloworld you can compile it and run it with ./helloworld on most unix systems. On Windows you can use Visual Studio or MingW to build the file and then run it either through cmd or Powershell.]]></summary></entry></feed>
