@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "C++ Hellow World"
+title:  "C++ Hello World"
 date:   2022-09-13 10:48:41 +0200
 categories: c++
 ---
